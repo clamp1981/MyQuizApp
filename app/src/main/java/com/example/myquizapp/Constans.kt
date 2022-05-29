@@ -25,7 +25,7 @@ object Constans {
             "Australia",
             "French",
             "America",
-            3 )
+            1 )
 
         questions.add(qur02)
 

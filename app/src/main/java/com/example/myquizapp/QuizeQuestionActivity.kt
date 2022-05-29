@@ -26,9 +26,11 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
     private var btnSubmit : Button? = null
 
     private var questions : ArrayList<Question>? = null
+    private var optionViews : ArrayList<TextView>? = null
     private var currentPositon : Int = 0
     private var questionSize : Int = 0
     private var selectedOptionIndex : Int = -1
+    private var currectCount : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,12 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
         tvQuestion = findViewById(R.id.tvQuestion )
         btnSubmit = findViewById(R.id.btnSubmit )
 
+        optionViews = ArrayList<TextView>()
+        optionViews?.add( 0, tvOption01!! )
+        optionViews?.add(1, tvOption02!!)
+        optionViews?.add(2, tvOption03!!)
+        optionViews?.add(3, tvOption04!!)
+
 
         questions =  Constans.getQuestions()
         questions?.let {
@@ -58,15 +66,43 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
 
 
         btnSubmit?.setOnClickListener() {
-            if( selectedOptionIndex == -1 ){
-                Toast.makeText(this,
-                    "Please Selected Answer!", Toast.LENGTH_LONG).show()
+            if(btnSubmit?.text == "SUBMIT"){
+                if( selectedOptionIndex == -1 ){
+                    Toast.makeText(this,
+                        "Please Selected Answer!", Toast.LENGTH_LONG).show()
+                }else{
+
+                    val correctIndex : Int = getCorrectValueCurrentQuestion()
+
+                    if( selectedOptionIndex == correctIndex ){
+                        currectCount++
+                        setCorrectOptionView( optionViews!![selectedOptionIndex] )
+                    }
+                    else{
+                        setCorrectOptionView( optionViews!![correctIndex] )
+                        setNotCorrectOptionView( optionViews!![selectedOptionIndex] )
+                    }
+                    if( currentPositon < questionSize - 1 )
+                        btnSubmit?.text = "Go Next Question"
+                    else
+                        btnSubmit?.text = "Finish"
+
+                }
+
+            }else {
+                if( currentPositon < questionSize - 1 ){
+                    currentPositon++
+                    setQuestion()
+                    this.selectedOptionIndex = -1
+                    setStyleOptionView()
+                    btnSubmit?.text = "SUBMIT"
+                }else{
+                    Toast.makeText(this,
+                        "Done!", Toast.LENGTH_LONG).show()
+                }
             }
 
-            if( currentPositon < questionSize - 1 ){
-                currentPositon++
-                setQuestion()
-            }
+
 
         }
     }
@@ -84,14 +120,52 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
         tvOption04?.text = question.optionFour
     }
 
-    fun setSelectedOptionView( view : TextView, selectedOptionIndex : Int ){
+    private fun getCorrectValueCurrentQuestion() : Int {
+        val question : Question = questions!![currentPositon]
+        return  question.correctOptionIndex
+    }
+
+    private fun setSelectedOptionView(view : TextView, selectedOptionIndex : Int ){
         this.selectedOptionIndex = selectedOptionIndex
-        view.background = ContextCompat.getDrawable(this,R.drawable.selected_option_border_bg)
-        view.setTextColor( Color.parseColor("#FF673AB7"))
+        setStyleOptionView()
+    }
+
+    private fun setStyleOptionView(){
+        optionViews?.let {
+            for( option in optionViews!! ) {
+                if( this.selectedOptionIndex == -1){
+                    option.background = ContextCompat.getDrawable(this,R.drawable.default_option_border_bg)
+                    option.setTextColor( Color.BLACK )
+                    option.typeface = Typeface.DEFAULT
+                }else {
+                    if( it.indexOf(option) != this.selectedOptionIndex ) {
+                        option.background = ContextCompat.getDrawable(this,R.drawable.default_option_border_bg)
+                        option.setTextColor( Color.BLACK )
+                        option.typeface = Typeface.DEFAULT
+                    }else {
+                        option.background = ContextCompat.getDrawable(this,R.drawable.selected_option_border_bg)
+                        option.setTextColor( Color.parseColor("#FF673AB7"))
+                        option.typeface = Typeface.DEFAULT_BOLD
+                    }
+
+
+                }
+
+            }
+        }
+
+    }
+
+    private fun setCorrectOptionView( view: TextView ){
+        view.background = ContextCompat.getDrawable(this,R.drawable.correct_option_border_bg)
+        view.setTextColor( Color.WHITE )
         view.typeface = Typeface.DEFAULT_BOLD
+    }
 
-
-
+    private fun setNotCorrectOptionView( view: TextView ){
+        view.background = ContextCompat.getDrawable(this,R.drawable.not_correct_option_border_bg )
+        view.setTextColor( Color.WHITE )
+        view.typeface = Typeface.DEFAULT_BOLD
     }
 
     //View.OnClickListener
