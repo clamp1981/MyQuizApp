@@ -1,5 +1,6 @@
 package com.example.myquizapp
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -31,10 +32,13 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
     private var questionSize : Int = 0
     private var selectedOptionIndex : Int = -1
     private var currectCount : Int = 0
+    private var userName : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quize_question)
+
+        userName = intent.getStringExtra(Constans.USER_NAME)
 
         ivFlag = findViewById(R.id.ivFlag)
         progressBar = findViewById(R.id.progressQuestion)
@@ -69,7 +73,7 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
             if(btnSubmit?.text == "SUBMIT"){
                 if( selectedOptionIndex == -1 ){
                     Toast.makeText(this,
-                        "Please Selected Answer!", Toast.LENGTH_LONG).show()
+                        "Please Selected Answer!", Toast.LENGTH_SHORT).show()
                 }else{
 
                     val correctIndex : Int = getCorrectValueCurrentQuestion()
@@ -97,8 +101,12 @@ class QuizeQuestionActivity() : AppCompatActivity() , View.OnClickListener {
                     setStyleOptionView()
                     btnSubmit?.text = "SUBMIT"
                 }else{
-                    Toast.makeText(this,
-                        "Done!", Toast.LENGTH_LONG).show()
+                    val intent = Intent( this, ResultActivity::class.java)
+                    intent.putExtra(Constans.USER_NAME, userName )
+                    intent.putExtra(Constans.TOTAL_QUESTION_SIZE, questionSize )
+                    intent.putExtra(Constans.CORRECT_ANSWER_SIZE, currectCount )
+                    startActivity(intent)
+
                 }
             }
 

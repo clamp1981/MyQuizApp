@@ -2,6 +2,10 @@ package com.example.myquizapp
 
 object Constans {
 
+    const val USER_NAME : String ="user_name"
+    const val TOTAL_QUESTION_SIZE : String = "total_question_size"
+    const val CORRECT_ANSWER_SIZE : String = "correct_answer_size"
+
     fun getQuestions() : ArrayList<Question>{
         val questionString = "What country does this flag belong to?"
         var questions = ArrayList<Question>()
